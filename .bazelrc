@@ -1,0 +1,31 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
+common --registry=https://bcr.bazel.build
+
+# Required flags: select nlohmann JSON backend and disable remote logging
+# (vajson package is unavailable and score_communication is not a dependency)
+build --@score_baselibs//score/json:base_library=nlohmann
+build --@score_baselibs//score/mw/log/flags:KRemote_Logging=False
+build --@score_logging//score/mw/log/flags:KRemote_Logging=False
+
+# Common toolchain flags (used by platform configs below)
+build:toolchain_common --incompatible_strict_action_env
+build:toolchain_common --host_platform=@score_bazel_platforms//:x86_64-linux
+
+# x86_64 Linux build with managed GCC 12.2.0 toolchain
+build:x86_64-linux --config=toolchain_common
+build:x86_64-linux --platforms=@score_bazel_platforms//:x86_64-linux-gcc_12.2.0-posix
+build:x86_64-linux --extra_toolchains=@score_gcc_x86_64_toolchain//:x86_64-linux-gcc_12.2.0-posix
+build:x86_64-linux --define config=x86_64-linux
