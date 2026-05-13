@@ -12,11 +12,30 @@
 # *******************************************************************************
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
+sh_binary(
+    name = "run_datarouter",
+    srcs = ["datarouter.sh"],
+    data = [
+        "@score_logging//score/datarouter",
+        "//config:datarouter_configs",
+    ],
+)
+
+sh_binary(
+    name = "run_simple_log",
+    srcs = ["simple_log.sh"],
+    data = [
+        "//:simple_log",
+        "//config:demo_app_configs",
+    ],
+)
+
 cc_binary(
     name = "simple_log",
     srcs = ["main.cpp"],
     visibility = ["//visibility:public"],
     deps = [
-        "@score_baselibs//score/mw/log",
+        "@score_logging//score/mw/log",
+        "@score_logging//score/mw/log/backend:remote",
     ],
 )

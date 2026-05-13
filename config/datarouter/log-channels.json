@@ -1,0 +1,16 @@
+{
+    "channels": {
+        "3491": {
+            "address": "0.0.0.0",
+            "channelThreshold": "kVerbose",
+            "dstAddress": "127.0.0.1",
+            "dstPort": 3490,
+            "ecu": "DEMO",
+            "port": 3491
+        }
+    },
+    "channelAssignments": {},
+    "defaultChannel": "3491",
+    "defaultThresold": "kVerbose",
+    "messageThresholds": {}
+}

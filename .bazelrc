@@ -17,9 +17,15 @@ common --registry=https://bcr.bazel.build
 # Required flags: select nlohmann JSON backend and disable remote logging
 # (vajson package is unavailable and score_communication is not a dependency)
 build --@score_baselibs//score/json:base_library=nlohmann
+build --@score_baselibs//score/mw/log/flags:KRemote_Logging=True
+build --@score_logging//score/mw/log/flags:KRemote_Logging=True
+build --@score_logging//score/datarouter/build_configuration_flags:persistent_logging=False
+build --@score_logging//score/datarouter/build_configuration_flags:persistent_config_feature_enabled=False
+build --@score_logging//score/datarouter/build_configuration_flags:enable_nonverbose_dlt=False
+build --@score_logging//score/datarouter/build_configuration_flags:enable_dynamic_configuration=False
+build --@score_logging//score/datarouter/build_configuration_flags:file_transfer=False
+build --@score_logging//score/datarouter/build_configuration_flags:use_local_vlan=True
 build --cxxopt=-Wno-deprecated-declarations
-build --@score_baselibs//score/mw/log/flags:KRemote_Logging=False
-build --@score_logging//score/mw/log/flags:KRemote_Logging=False
 
 # Common toolchain flags (used by platform configs below)
 build:toolchain_common --incompatible_strict_action_env

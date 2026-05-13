@@ -11,8 +11,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
-exports_files(
-    glob(["demo_app/*.json"]),
+filegroup(
+    name = "datarouter_configs",
+    srcs = glob(["datarouter/*.json"]),
     visibility = ["//visibility:public"],
 )
 
@@ -20,4 +21,18 @@ filegroup(
     name = "demo_app_configs",
     srcs = glob(["demo_app/*.json"]),
     visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "x86_64-linux",
+    define_values = {
+        "config": "x86_64-linux",
+    },
+)
+
+config_setting(
+    name = "host",
+    define_values = {
+        "config": "host",
+    },
 )
