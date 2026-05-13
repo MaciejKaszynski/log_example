@@ -1,24 +1,19 @@
-# simple_log — Remote DLT Logging Demo
+# simple_log
 
 ```bash
 bazel run --config=x86_64-linux //:run_demo
 ```
 
-The script will pause and let you start the dlt viewer.
+The script will pause and let you start the dlt-recieve to get the messages.
 
-Open dlt-viewer and add an ECU with **Interface Type** as **UDP DLT** and
-the port being **3490**. And finally connect.
-
-WARNING: Seems that using dlt-viewer from WSL isn't working (need to figure out why)
-but the windows apps works fine.
-
-Alternatively, receive logs on the command line:
+Note: You can install this using `sudo apt install dlt-tools`
 
 ```bash
 dlt-receive -u -m 239.255.42.99 -p 3490 -a
 ```
 
 Then press Enter to continue the demo.
+You should see logs coming in from the example app.
 
 ## Troubleshooting
 
@@ -34,12 +29,6 @@ To stop it permanently:
 
 ```bash
 sudo systemctl disable dlt-daemon
-```
-
-## Cleanup
-
-```bash
-sudo ip link set lo multicast off
 ```
 
 ## Custom staging path
