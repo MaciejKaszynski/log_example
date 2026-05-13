@@ -17,16 +17,23 @@ module(
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
 bazel_dep(name = "platforms", version = "1.0.0")
-bazel_dep(name = "score_baselibs", version = "0.2.4")
-bazel_dep(name = "score_logging", version = "0.1.0")
+bazel_dep(name = "score_baselibs", version = "0.2.7")
+bazel_dep(name = "score_logging", version = "0.2.1")
+
+# score_logging@0.2.1 incorrectly declares score_docs_as_code as a non-dev dependency,
+# causing a compatibility level conflict with score_baselibs_rust. Force a single version.
+single_version_override(
+    module_name = "score_docs_as_code",
+    version = "4.0.1",
+)
 
 # x86_64 Linux toolchain
 bazel_dep(name = "score_bazel_platforms", version = "0.1.2", dev_dependency = True)
 bazel_dep(name = "score_bazel_cpp_toolchains", version = "0.2.2", dev_dependency = True)
 
-# trlc has no registry entry; score_logging resolves it via git_override when it
-# is the root module. As a non-root dependency, Bazel still needs the override
-# provided here so that module resolution does not fail.
+# # trlc has no registry entry; score_logging resolves it via git_override when it
+# # is the root module. As a non-root dependency, Bazel still needs the override
+# # provided here so that module resolution does not fail.
 bazel_dep(name = "trlc", version = "0.0.0", dev_dependency = True)
 git_override(
     module_name = "trlc",

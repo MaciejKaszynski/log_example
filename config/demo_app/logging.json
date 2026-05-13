@@ -1,0 +1,21 @@
+{
+    "appId": "DEMO",
+    "appDesc": "Remote Logging Demo",
+    "logLevel": "kVerbose",
+    "logMode": "kConsole",
+    "ringBufferSize": 524288,
+    "contextConfigs": [
+        {
+            "name": "MAIN",
+            "logLevel": "kVerbose"
+        },
+        {
+            "name": "SENS",
+            "logLevel": "kVerbose"
+        },
+        {
+            "name": "NETW",
+            "logLevel": "kVerbose"
+        }
+    ]
+}

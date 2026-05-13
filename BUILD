@@ -18,6 +18,5 @@ cc_binary(
     visibility = ["//visibility:public"],
     deps = [
         "@score_baselibs//score/mw/log",
-        "@score_logging//score/mw/log/detail/common:recorder_factory"
     ],
 )
