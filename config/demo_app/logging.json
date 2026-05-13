@@ -2,7 +2,7 @@
     "appId": "DEMO",
     "appDesc": "Remote Logging Demo",
     "logLevel": "kVerbose",
-    "logMode": "kConsole",
+    "logMode": "kRemote",
     "ringBufferSize": 524288,
     "contextConfigs": [
         {
