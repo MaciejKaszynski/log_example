@@ -1,9 +1,22 @@
+#include "score/mw/log/log_stream.h"
 #include "score/mw/log/logger.h"
 #include "score/mw/log/logging.h"
 
 #include <chrono>
 #include <cstdint>
 #include <thread>
+
+// logging for custom type
+struct Point
+{
+    int x;
+    int y;
+};
+
+score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const Point& p)
+{
+    return stream << "Point(" << p.x << "," << p.y << ")";
+}
 
 int main()
 {
@@ -22,7 +35,7 @@ int main()
 
     while (counter < 30U)
     {
-        main_log.LogInfo() << "Loop iteration" << counter;
+        main_log.LogInfo() << "Loop iteration" << counter << Point{static_cast<int>(counter), static_cast<int>(counter * 2U)};
 
         temperature += 0.3F;
         sens_log.LogInfo() << "Temperature reading:" << temperature << "degC";

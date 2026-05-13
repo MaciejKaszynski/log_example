@@ -1,85 +1,54 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUNFILES_DIR="${RUNFILES_DIR:-$0.runfiles}"
 
-# ---------------------------------------------------------------------------
-# Paths — override with environment variables if needed
-# ---------------------------------------------------------------------------
-DATAROUTER_BIN="${DATAROUTER_BIN:-/opt/datarouter/bin/datarouter}"
-DEMO_BIN="${DEMO_BIN:-${SCRIPT_DIR}/bazel-bin/simple_log}"
+# Cleanup the demo if killed
+cleanup() {
+    kill "${DATAROUTER_PID:-}" 2>/dev/null || true
+    wait "${DATAROUTER_PID:-}" 2>/dev/null || true
+    rm -rf "${DEMO_TARGET:-}"
+}
+trap cleanup EXIT
 
-# ---------------------------------------------------------------------------
-# Sanity checks
-# ---------------------------------------------------------------------------
-if [[ ! -x "${DATAROUTER_BIN}" ]]; then
-    echo "ERROR: datarouter binary not found at '${DATAROUTER_BIN}'"
-    echo "  Build it from score/logging:"
-    echo "    bazel build --config=spp_host_gcc //score/datarouter:datarouter"
-    echo "  Then copy to /opt/datarouter/bin/ or set DATAROUTER_BIN=<path>"
-    exit 1
-fi
+DATAROUTER_BIN="${RUNFILES_DIR}/$1"
+SIMPLE_LOG_BIN="${RUNFILES_DIR}/$2"
+LOG_CHANNELS_JSON="${RUNFILES_DIR}/$3"
+DATAROUTER_LOGGING_JSON="${RUNFILES_DIR}/$4"
+DEMO_APP_LOGGING_JSON="${RUNFILES_DIR}/$5"
+shift 5
 
-if [[ ! -x "${DEMO_BIN}" ]]; then
-    echo "INFO: demo binary not found, building now..."
-    (cd "${SCRIPT_DIR}" && bazel build --config=spp_host_gcc //:simple_log)
-fi
+DEMO_TARGET=".demo_runtime/logging"
+for arg in "$@"; do
+    case "${arg}" in
+        --target=*) DEMO_TARGET="${arg#--target=}" ;;
+        *) echo "ERROR: unknown argument: ${arg}" >&2; exit 1 ;;
+    esac
+done
+[[ "${DEMO_TARGET}" == /* ]] || DEMO_TARGET="${BUILD_WORKSPACE_DIRECTORY}/${DEMO_TARGET}"
 
-# ---------------------------------------------------------------------------
-# Enable multicast on the loopback interface (required for DLT UDP)
-# ---------------------------------------------------------------------------
-if ! ip link show lo | grep -q "MULTICAST"; then
-    echo "INFO: enabling multicast on loopback (requires sudo)"
-    sudo ip link set lo multicast on
-fi
+mkdir -p "${DEMO_TARGET}/bin" "${DEMO_TARGET}/etc"
+cp "${DATAROUTER_BIN}"          "${DEMO_TARGET}/bin/datarouter"
+chmod +x                        "${DEMO_TARGET}/bin/datarouter"
+cp "${SIMPLE_LOG_BIN}"          "${DEMO_TARGET}/bin/simple_log"
+chmod +x                        "${DEMO_TARGET}/bin/simple_log"
+cp "${LOG_CHANNELS_JSON}"       "${DEMO_TARGET}/etc/log-channels.json"
+cp "${DATAROUTER_LOGGING_JSON}" "${DEMO_TARGET}/etc/logging.json"
+cp "${DEMO_APP_LOGGING_JSON}"   "${DEMO_TARGET}/etc/demo_app.logging.json"
 
-# ---------------------------------------------------------------------------
-# Deploy configs
-# ---------------------------------------------------------------------------
-echo "INFO: deploying configs..."
-sudo mkdir -p /opt/simple_log/etc /opt/datarouter/etc
-
-sudo cp "${SCRIPT_DIR}/config/demo_app/logging.json"       /opt/simple_log/etc/logging.json
-sudo cp "${SCRIPT_DIR}/config/datarouter/log-channels.json" /opt/datarouter/etc/log-channels.json
-sudo cp "${SCRIPT_DIR}/config/datarouter/logging.json"      /opt/datarouter/etc/logging.json
-
-# ---------------------------------------------------------------------------
-# Start datarouter (kill any existing instance first)
-# ---------------------------------------------------------------------------
-echo "INFO: starting datarouter..."
-pkill -f "datarouter --no_adaptive_runtime" 2>/dev/null || true
+pkill -f "${DEMO_TARGET}/bin/datarouter" 2>/dev/null || true
 sleep 0.3
 
-"${DATAROUTER_BIN}" --no_adaptive_runtime &
+cd "${DEMO_TARGET}"
+MW_LOG_CONFIG_FILE="$(pwd)/etc/logging.json" ./bin/datarouter --no_adaptive_runtime &
 DATAROUTER_PID=$!
-echo "INFO: datarouter running (PID ${DATAROUTER_PID})"
-
-# Give the daemon time to bind its shared memory and socket
+echo "datarouter running (PID ${DATAROUTER_PID})"
 sleep 1
 
-# ---------------------------------------------------------------------------
-# dlt-viewer hint
-# ---------------------------------------------------------------------------
 echo ""
-echo "============================================================"
-echo "  Open dlt-viewer now and connect via:"
-echo "    Protocol : UDP"
-echo "    Host     : 127.0.0.1"
-echo "    Port     : 3490"
-echo "  Then press Enter here to start the demo app."
-echo "============================================================"
+echo "Connect dlt-viewer: UDP multicast 239.255.42.99:3490"
+echo "Press Enter to start the demo app."
 read -r
 
-# ---------------------------------------------------------------------------
-# Run the demo app
-# ---------------------------------------------------------------------------
-echo "INFO: running demo app..."
-"${DEMO_BIN}"
+MW_LOG_CONFIG_FILE="$(pwd)/etc/demo_app.logging.json" ./bin/simple_log
 
-# ---------------------------------------------------------------------------
-# Cleanup
-# ---------------------------------------------------------------------------
-echo "INFO: stopping datarouter..."
-kill "${DATAROUTER_PID}" 2>/dev/null || true
-wait "${DATAROUTER_PID}" 2>/dev/null || true
-echo "INFO: done."

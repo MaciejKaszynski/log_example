@@ -11,6 +11,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+exports_files(
+    glob(["datarouter/*.json", "demo_app/*.json"]),
+    visibility = ["//visibility:public"],
+)
+
 filegroup(
     name = "datarouter_configs",
     srcs = glob(["datarouter/*.json"]),

@@ -12,22 +12,27 @@
 # *******************************************************************************
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
-sh_binary(
-    name = "run_datarouter",
-    srcs = ["datarouter.sh"],
-    data = [
-        "@score_logging//score/datarouter",
-        "//config:datarouter_configs",
-    ],
-)
+_DEMO_DATA = [
+    "@score_logging//score/datarouter",
+    "//:simple_log",
+    "//config:datarouter/log-channels.json",
+    "//config:datarouter/logging.json",
+    "//config:demo_app/logging.json",
+]
+
+_DEMO_ARGS = [
+    "$(rlocationpath @score_logging//score/datarouter)",
+    "$(rlocationpath //:simple_log)",
+    "$(rlocationpath //config:datarouter/log-channels.json)",
+    "$(rlocationpath //config:datarouter/logging.json)",
+    "$(rlocationpath //config:demo_app/logging.json)",
+]
 
 sh_binary(
-    name = "run_simple_log",
-    srcs = ["simple_log.sh"],
-    data = [
-        "//:simple_log",
-        "//config:demo_app_configs",
-    ],
+    name = "run_demo",
+    srcs = ["run_demo.sh"],
+    args = _DEMO_ARGS,
+    data = _DEMO_DATA,
 )
 
 cc_binary(
