@@ -43,3 +43,14 @@ By default the demo is ran in ./.demo_runtime
 ```bash
 bazel run --config=x86_64-linux //:run_demo -- --target=/opt/logging
 ```
+
+# Filtering Messages
+
+
+There is an alternative `log-channels.json` config in
+`/etc/datarouter/filtered_log-channels.json`. Please rename it to be
+`log-channels.json` to use it.
+
+There you shall see that with `dlt-receive -u -m 239.255.42.99 -p 3490 -a`
+you will only see logs from `SENS` context.
+All the rest you can see with `dlt-receive -u -m 239.255.42.99 -p 3495 -a`.
