@@ -1,0 +1,11 @@
+{
+    "appId": "DEMO",
+    "appDesc": "Console Logging Demo",
+    "logLevel": "kVerbose",
+    "logMode": "kConsole",
+    "contextConfigs": [
+        {"name": "MAIN", "logLevel": "kVerbose"},
+        {"name": "SENS", "logLevel": "kVerbose"},
+        {"name": "NETW", "logLevel": "kVerbose"}
+    ]
+}

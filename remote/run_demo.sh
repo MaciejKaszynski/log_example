@@ -46,7 +46,8 @@ echo "datarouter running (PID ${DATAROUTER_PID})"
 sleep 1
 
 echo ""
-echo "Connect dlt-viewer: UDP multicast 239.255.42.99:3490"
+echo "Connect recieving application"
+echo "dlt-receive -u -m 239.255.42.99 -p 3490 -a"
 echo "Press Enter to start the demo app."
 read -r
 

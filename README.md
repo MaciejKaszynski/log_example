@@ -1,40 +1,22 @@
-# simple_log
+# log_example
 
+Minimal examples of `score_logging` with three backends.
+
+## File and console
+
+Both examples run with a single command 
+configs are exposed using the  `MW_LOG_CONFIG_FILE` env var
+
+Run with:
 ```bash
-bazel run --config=x86_64-linux //:run_demo
+bazel run --config=x86_64-linux //console
+bazel run --config=x86_64-linux //file
 ```
 
-The script will pause and let you start the dlt-recieve to get the messages.
+## Remote
 
-Note: You can install this using `sudo apt install dlt-tools`
-
-```bash
-dlt-receive -u -m 239.255.42.99 -p 3490 -a
-```
-
-Then press Enter to continue the demo.
-You should see logs coming in from the example app.
-
-## Troubleshooting
-
-Installing `dlt-daemon` enables a `dlt-daemon` systemd service
-on startup that binds port 3490, which conflicts with the datarouter.
+The remote demo also launches a `datarouter`, so it needs a small script. See [remote/README.md](remote/README.md) for details.
 
 ```bash
-sudo ss -ulnp | grep 3490
-sudo kill <pid>
-```
-
-To stop it permanently:
-
-```bash
-sudo systemctl disable dlt-daemon
-```
-
-## Custom staging path
-
-By default the demo is ran in ./.demo_runtime
-
-```bash
-bazel run --config=x86_64-linux //:run_demo -- --target=/opt/logging
+bazel run --config=x86_64-linux //remote
 ```

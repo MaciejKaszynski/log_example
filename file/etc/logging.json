@@ -1,0 +1,12 @@
+{
+    "appId": "DEMO",
+    "appDesc": "File Logging Demo",
+    "logLevel": "kVerbose",
+    "logMode": "kFile",
+    "logFilePath": "/tmp",
+    "contextConfigs": [
+        {"name": "MAIN", "logLevel": "kVerbose"},
+        {"name": "SENS", "logLevel": "kVerbose"},
+        {"name": "NETW", "logLevel": "kVerbose"}
+    ]
+}
